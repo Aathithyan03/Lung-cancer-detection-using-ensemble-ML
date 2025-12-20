@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-5 text-center">
+
+  <!-- Page Heading -->
+  <h2 class="fw-bold text-success"><b>🧬 Lung Cancer Prediction Result</b></h2>
+
+  <!-- Prediction & Probability -->
+  <div class="mt-4">
+    <h4 class="fw-bold text-dark"><b>Cancer: {{ prediction }}</b></h4>
+    <p class="fs-5"><b>Probability: {{ probability }}</b></p>
+  </div>
+
+  <!-- Feature Importance Chart -->
+  {% if feature_importances %}
+  <div class="mt-5">
+    <h4 class="text-success fw-bold"><b>Feature Importance</b></h4>
+    <canvas id="importanceChart" width="600" height="350"></canvas>
+  </div>
+
+  <!-- Chart.js Library -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Chart Initialization -->
+  <script id="chart-data" type="application/json">
+    {
+      "labels": {{ feature_names | tojson | safe }},
+      "values": {{ feature_importances | tojson | safe }}
+    }
+  </script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      // Safely parse the JSON data embedded above
+      const chartData = JSON.parse(document.getElementById("chart-data").textContent);
+      const labels = chartData.labels || [];
+      const dataValues = chartData.values || [];
+
+      const ctx = document.getElementById("importanceChart").getContext("2d");
+      new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: labels,
+          datasets: [{
+            label: "Feature Importance Score",
+            data: dataValues,
+            backgroundColor: "rgba(54, 162, 235, 0.6)",
+            borderColor: "rgba(54, 162, 235, 1)",
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false },
+            title: {
+              display: true,
+              text: "Feature Importance from Random Forest Model",
+              font: { size: 16, weight: "bold" }
+            }
+          },
+          scales: {
+            x: {
+              title: { display: true, text: "Features" },
+              ticks: { autoSkip: false, maxRotation: 90, minRotation: 45 }
+            },
+            y: {
+              beginAtZero: true,
+              title: { display: true, text: "Importance Score" }
+            }
+          }
+        }
+      });
+    });
+  </script>
+
+  {% else %}
+  <div class="alert alert-warning mt-5" role="alert">
+    ⚠️ Feature importance data not available for this model.
+  </div>
+  {% endif %}
+
+  <!-- Predict Again Button -->
+  <div class="mt-5">
+    <a href="/patient-form" class="btn btn-outline-success rounded-pill px-4">
+      <center><b>🔁 Predict Again</b></center>
+    </a>
+  </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,285 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-5">
+
+  <!-- Page Heading -->
+  <div class="text-center mb-5">
+    <h2 class="fw-bold text-success"><b>Patient Details & Parameters</b></h2>
+    <p class="text-muted"><b>Enter patient details and review parameter information.</b></p>
+  </div>
+
+  <div class="row g-4 align-items-stretch">
+    
+    <!-- Patient Form Section -->
+    <div class="col-lg-6 d-flex">
+      <div class="card p-4 shadow-lg border-0 rounded-4 w-100 h-100">
+        <h4 class="text-center text-success mb-3"><b>Patient Form</b></h4>
+
+        <form method="POST" action="/predict">
+          <div class="table-responsive">
+            <table class="table table-bordered align-middle">
+              <thead class="table-light text-center">
+                <tr>
+                  <th><b>Parameter</b></th>
+                  <th><b>Input Value</b></th>
+                </tr>
+              </thead>
+              <tbody>
+  <!-- Gender -->
+  <tr>
+    <td class="fw-semibold">GENDER</td>
+    <td>
+      <select name="GENDER" class="form-control rounded-pill" required>
+        <option value="" selected disabled>Select</option>
+        <option value="M">Male</option>
+        <option value="F">Female</option>
+      </select>
+    </td>
+  </tr>
+
+  <!-- Age -->
+  <tr>
+    <td class="fw-semibold">AGE</td>
+    <td>
+      <input type="number" name="AGE" class="form-control rounded-pill" min="1" max="120" required>
+    </td>
+  </tr>
+
+  <!-- Remaining fields: Dropdowns now start empty and are required -->
+  <tr>
+    <td class="fw-semibold">SMOKING</td>
+    <td>
+      <select name="SMOKING" class="form-control rounded-pill" required>
+        <option value="" selected disabled>Select</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td class="fw-semibold">YELLOW_FINGERS</td>
+    <td>
+      <select name="YELLOW_FINGERS" class="form-control rounded-pill" required>
+        <option value="" selected disabled>Select</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td class="fw-semibold">ANXIETY</td>
+    <td>
+      <select name="ANXIETY" class="form-control rounded-pill" required>
+        <option value="" selected disabled>Select</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td class="fw-semibold">PEER_PRESSURE</td>
+    <td>
+      <select name="PEER_PRESSURE" class="form-control rounded-pill" required>
+        <option value="" selected disabled>Select</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td class="fw-semibold">CHRONIC DISEASE</td>
+    <td>
+      <select name="CHRONIC DISEASE" class="form-control rounded-pill" required>
+        <option value="" selected disabled>Select</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td class="fw-semibold">FATIGUE</td>
+    <td>
+      <select name="FATIGUE" class="form-control rounded-pill" required>
+        <option value="" selected disabled>Select</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td class="fw-semibold">ALLERGY</td>
+    <td>
+      <select name="ALLERGY" class="form-control rounded-pill" required>
+        <option value="" selected disabled>Select</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td class="fw-semibold">WHEEZING</td>
+    <td>
+      <select name="WHEEZING" class="form-control rounded-pill" required>
+        <option value="" selected disabled>Select</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td class="fw-semibold">ALCOHOL CONSUMING</td>
+    <td>
+      <select name="ALCOHOL CONSUMING" class="form-control rounded-pill" required>
+        <option value="" selected disabled>Select</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td class="fw-semibold">COUGHING</td>
+    <td>
+      <select name="COUGHING" class="form-control rounded-pill" required>
+        <option value="" selected disabled>Select</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td class="fw-semibold">SHORTNESS OF BREATH</td>
+    <td>
+      <select name="SHORTNESS OF BREATH" class="form-control rounded-pill" required>
+        <option value="" selected disabled>Select</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td class="fw-semibold">SWALLOWING DIFFICULTY</td>
+    <td>
+      <select name="SWALLOWING DIFFICULTY" class="form-control rounded-pill" required>
+        <option value="" selected disabled>Select</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td class="fw-semibold">CHEST PAIN</td>
+    <td>
+      <select name="CHEST PAIN" class="form-control rounded-pill" required>
+        <option value="" selected disabled>Select</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+      </select>
+    </td>
+  </tr>
+</tbody>
+            </table>
+          </div>
+          <button type="submit" class="btn btn-success w-100 mt-2 rounded-pill"><b>🔍 Predict Risk</b></button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Parameters Info Section -->
+    <div class="col-lg-6 d-flex">
+      <div class="card p-4 shadow-lg border-0 rounded-4 w-100 h-100">
+        <h4 class="text-center text-success mb-3"><b>About the Parameters</b></h4>
+
+        <div class="table-responsive">
+          <table class="table table-bordered align-middle">
+            <thead class="table-light text-center">
+              <tr>
+                <th><b>Parameter</b></th>
+                <th><b>Description</b></th>
+                <th><b>Values</b></th>
+              </tr>
+            </thead>
+            <tbody>
+  <tr>
+    <td><b>GENDER</b></td>
+    <td>Patient’s gender</td>
+    <td>M / F</td>
+  </tr>
+  <tr>
+    <td><b>AGE</b></td>
+    <td>Patient’s age in years</td>
+    <td>1 – 120</td>
+  </tr>
+  <tr>
+    <td><b>SMOKING</b></td>
+    <td>Does the patient smoke?</td>
+    <td>1 = Yes, 2 = No</td>
+  </tr>
+  <tr>
+    <td><b>YELLOW_FINGERS</b></td>
+    <td>Yellow fingers due to smoking</td>
+    <td>1 = Yes, 2 = No</td>
+  </tr>
+  <tr>
+    <td><b>ANXIETY</b></td>
+    <td>Does the patient have anxiety?</td>
+    <td>1 = Yes, 2 = No</td>
+  </tr>
+  <tr>
+    <td><b>PEER_PRESSURE</b></td>
+    <td>Exposed to peer pressure</td>
+    <td>1 = Yes, 2 = No</td>
+  </tr>
+  <tr>
+    <td><b>CHRONIC DISEASE</b></td>
+    <td>History of chronic diseases</td>
+    <td>1 = Yes, 2 = No</td>
+  </tr>
+  <tr>
+    <td><b>FATIGUE</b></td>
+    <td>Frequent fatigue symptoms</td>
+    <td>1 = Yes, 2 = No</td>
+  </tr>
+  <tr>
+    <td><b>ALLERGY</b></td>
+    <td>Any allergy present</td>
+    <td>1 = Yes, 2 = No</td>
+  </tr>
+  <tr>
+    <td><b>WHEEZING</b></td>
+    <td>Does the patient wheeze?</td>
+    <td>1 = Yes, 2 = No</td>
+  </tr>
+  <tr>
+    <td><b>ALCOHOL CONSUMING</b></td>
+    <td>Consumes alcohol</td>
+    <td>1 = Yes, 2 = No</td>
+  </tr>
+  <tr>
+    <td><b>COUGHING</b></td>
+    <td>Frequent coughing</td>
+    <td>1 = Yes, 2 = No</td>
+  </tr>
+  <tr>
+    <td><b>SHORTNESS OF BREATH</b></td>
+    <td>Breathing difficulty</td>
+    <td>1 = Yes, 2 = No</td>
+  </tr>
+  <tr>
+    <td><b>SWALLOWING DIFFICULTY</b></td>
+    <td>Difficulty swallowing food/liquid</td>
+    <td>1 = Yes, 2 = No</td>
+  </tr>
+  <tr>
+    <td><b>CHEST PAIN</b></td>
+    <td>Chest pain reported</td>
+    <td>1 = Yes, 2 = No</td>
+  </tr>
+</tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

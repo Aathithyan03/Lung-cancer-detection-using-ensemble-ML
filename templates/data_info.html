@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="p-5">
+  <h3 class="text-success"><b>📊 Data & Model Insights</b></h3>
+  <b><p>Below are some key visualizations generated from the dataset and model performance.</b></p>
+
+  <div class="row">
+    <!-- Age Distribution -->
+    <div class="col-md-6">
+      <div class="card p-3 shadow mb-4">
+        <h5 class="text-center text-success"><b>Age Distribution</b></h5>
+        <img src="{{ url_for('static', filename='age_distribution.png') }}" class="img-fluid rounded" alt="Age Distribution">
+      </div>
+    </div>
+
+    <!-- Feature Importance -->
+    <div class="col-md-6">
+      <div class="card p-3 shadow mb-4">
+        <h5 class="text-center text-success"><b>Feature Importance</b></h5>
+        <img src="{{ url_for('static', filename='feature_importance.png') }}" class="img-fluid rounded" alt="Feature Importance">
+      </div>
+    </div>
+
+    <!-- Correlation Heatmap -->
+    <div class="col-md-6">
+      <div class="card p-3 shadow mb-4">
+        <h5 class="text-center text-success"><b>Correlation Heatmap</b></h5>
+        <img src="{{ url_for('static', filename='correlation_heatmap.png') }}" class="img-fluid rounded" alt="Correlation Heatmap">
+      </div>
+    </div>
+
+    <!-- ROC Curve -->
+    <div class="col-md-6">
+      <div class="card p-3 shadow mb-4">
+        <h5 class="text-center text-success"><b>ROC Curve</b></h5>
+        <img src="{{ url_for('static', filename='roc_curve.png') }}" class="img-fluid rounded" alt="ROC Curve">
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
