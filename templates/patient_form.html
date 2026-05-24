@@ -1,285 +1,590 @@
 {% extends "base.html" %}
+{% block title %}Patient Analysis — PulmoScan AI{% endblock %}
 {% block content %}
-<div class="container py-5">
 
-  <!-- Page Heading -->
-  <div class="text-center mb-5">
-    <h2 class="fw-bold text-success"><b>Patient Details & Parameters</b></h2>
-    <p class="text-muted"><b>Enter patient details and review parameter information.</b></p>
+<style>
+  .form-page {
+    padding: 3rem 2.5rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .form-page-header {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 3rem;
+  }
+
+  .form-page-title {
+    font-family: var(--font-display);
+    font-size: 2.4rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1.1;
+  }
+
+  .form-page-title span { color: var(--teal); }
+
+  .form-page-sub {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+  }
+
+  .form-layout {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 1.5rem;
+    align-items: start;
+  }
+
+  /* ── FORM CARD ── */
+  .form-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    padding: 2rem;
+    backdrop-filter: blur(12px);
+  }
+
+  .form-card-title {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--card-border);
+  }
+
+  .form-card-title span {
+    font-size: 1.1rem;
+  }
+
+  /* ── PARAMETER GROUPS ── */
+  .param-section {
+    margin-bottom: 2rem;
+  }
+
+  .param-section-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .param-section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--card-border);
+  }
+
+  .params-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .params-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  .field-group {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Toggle-style YES/NO for binary fields */
+  .toggle-group {
+    display: flex;
+    gap: 6px;
+  }
+
+  .toggle-option {
+    flex: 1;
+    position: relative;
+  }
+
+  .toggle-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .toggle-option label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 9px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+
+  .toggle-option input:checked + label {
+    background: var(--teal-glow);
+    border-color: var(--teal-border);
+    color: var(--teal);
+  }
+
+  .toggle-option.no input:checked + label {
+    background: var(--red-glow);
+    border-color: rgba(255, 71, 87, 0.3);
+    color: var(--red-alert);
+  }
+
+  .toggle-option label:hover {
+    border-color: rgba(255,255,255,0.15);
+    color: var(--text-primary);
+  }
+
+  /* ── SUBMIT BTN ── */
+  .submit-btn {
+    width: 100%;
+    padding: 16px;
+    background: var(--teal);
+    color: var(--navy);
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: -0.01em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.25s;
+    margin-top: 1.5rem;
+  }
+
+  .submit-btn:hover {
+    background: var(--teal-dim);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0,212,170,0.35);
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    backdrop-filter: blur(12px);
+    position: sticky;
+    top: 86px;
+  }
+
+  .sidebar-title {
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--card-border);
+    letter-spacing: -0.01em;
+  }
+
+  .param-info-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .param-info-item {
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    gap: 8px;
+    font-size: 0.8rem;
+    align-items: start;
+  }
+
+  .param-info-item:last-child { border-bottom: none; }
+
+  .param-name {
+    color: var(--teal);
+    font-weight: 500;
+    font-size: 0.78rem;
+  }
+
+  .param-desc {
+    color: var(--text-secondary);
+    line-height: 1.4;
+  }
+
+  .param-val {
+    display: inline-block;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--card-border);
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 3px;
+  }
+
+  /* Progress indicator */
+  .progress-pill {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: rgba(0,212,170,0.06);
+    border: 1px solid var(--teal-border);
+    border-radius: var(--radius-sm);
+    margin-bottom: 1.5rem;
+  }
+
+  .progress-text { font-size: 0.8rem; color: var(--text-secondary); }
+  .progress-count { font-size: 0.8rem; font-weight: 600; color: var(--teal); }
+</style>
+
+<div class="form-page">
+
+  <!-- Header -->
+  <div class="form-page-header fade-up">
+    <span class="badge-teal">Clinical Assessment</span>
+    <h1 class="form-page-title">Patient <span>Risk Analysis</span></h1>
+    <p class="form-page-sub">Enter clinical parameters below. All fields are required for accurate prediction.</p>
   </div>
 
-  <div class="row g-4 align-items-stretch">
-    
-    <!-- Patient Form Section -->
-    <div class="col-lg-6 d-flex">
-      <div class="card p-4 shadow-lg border-0 rounded-4 w-100 h-100">
-        <h4 class="text-center text-success mb-3"><b>Patient Form</b></h4>
+  <div class="form-layout">
 
-        <form method="POST" action="/predict">
-          <div class="table-responsive">
-            <table class="table table-bordered align-middle">
-              <thead class="table-light text-center">
-                <tr>
-                  <th><b>Parameter</b></th>
-                  <th><b>Input Value</b></th>
-                </tr>
-              </thead>
-              <tbody>
-  <!-- Gender -->
-  <tr>
-    <td class="fw-semibold">GENDER</td>
-    <td>
-      <select name="GENDER" class="form-control rounded-pill" required>
-        <option value="" selected disabled>Select</option>
-        <option value="M">Male</option>
-        <option value="F">Female</option>
-      </select>
-    </td>
-  </tr>
+    <!-- MAIN FORM -->
+    <form method="POST" action="/predict" class="fade-up delay-1">
 
-  <!-- Age -->
-  <tr>
-    <td class="fw-semibold">AGE</td>
-    <td>
-      <input type="number" name="AGE" class="form-control rounded-pill" min="1" max="120" required>
-    </td>
-  </tr>
+      <!-- Demographics -->
+      <div class="form-card" style="margin-bottom: 1.5rem;">
+        <div class="form-card-title"><span>👤</span> Demographics</div>
 
-  <!-- Remaining fields: Dropdowns now start empty and are required -->
-  <tr>
-    <td class="fw-semibold">SMOKING</td>
-    <td>
-      <select name="SMOKING" class="form-control rounded-pill" required>
-        <option value="" selected disabled>Select</option>
-        <option value="1">1</option>
-        <option value="2">2</option>
-      </select>
-    </td>
-  </tr>
-  <tr>
-    <td class="fw-semibold">YELLOW_FINGERS</td>
-    <td>
-      <select name="YELLOW_FINGERS" class="form-control rounded-pill" required>
-        <option value="" selected disabled>Select</option>
-        <option value="1">1</option>
-        <option value="2">2</option>
-      </select>
-    </td>
-  </tr>
-  <tr>
-    <td class="fw-semibold">ANXIETY</td>
-    <td>
-      <select name="ANXIETY" class="form-control rounded-pill" required>
-        <option value="" selected disabled>Select</option>
-        <option value="1">1</option>
-        <option value="2">2</option>
-      </select>
-    </td>
-  </tr>
-  <tr>
-    <td class="fw-semibold">PEER_PRESSURE</td>
-    <td>
-      <select name="PEER_PRESSURE" class="form-control rounded-pill" required>
-        <option value="" selected disabled>Select</option>
-        <option value="1">1</option>
-        <option value="2">2</option>
-      </select>
-    </td>
-  </tr>
-  <tr>
-    <td class="fw-semibold">CHRONIC DISEASE</td>
-    <td>
-      <select name="CHRONIC DISEASE" class="form-control rounded-pill" required>
-        <option value="" selected disabled>Select</option>
-        <option value="1">1</option>
-        <option value="2">2</option>
-      </select>
-    </td>
-  </tr>
-  <tr>
-    <td class="fw-semibold">FATIGUE</td>
-    <td>
-      <select name="FATIGUE" class="form-control rounded-pill" required>
-        <option value="" selected disabled>Select</option>
-        <option value="1">1</option>
-        <option value="2">2</option>
-      </select>
-    </td>
-  </tr>
-  <tr>
-    <td class="fw-semibold">ALLERGY</td>
-    <td>
-      <select name="ALLERGY" class="form-control rounded-pill" required>
-        <option value="" selected disabled>Select</option>
-        <option value="1">1</option>
-        <option value="2">2</option>
-      </select>
-    </td>
-  </tr>
-  <tr>
-    <td class="fw-semibold">WHEEZING</td>
-    <td>
-      <select name="WHEEZING" class="form-control rounded-pill" required>
-        <option value="" selected disabled>Select</option>
-        <option value="1">1</option>
-        <option value="2">2</option>
-      </select>
-    </td>
-  </tr>
-  <tr>
-    <td class="fw-semibold">ALCOHOL CONSUMING</td>
-    <td>
-      <select name="ALCOHOL CONSUMING" class="form-control rounded-pill" required>
-        <option value="" selected disabled>Select</option>
-        <option value="1">1</option>
-        <option value="2">2</option>
-      </select>
-    </td>
-  </tr>
-  <tr>
-    <td class="fw-semibold">COUGHING</td>
-    <td>
-      <select name="COUGHING" class="form-control rounded-pill" required>
-        <option value="" selected disabled>Select</option>
-        <option value="1">1</option>
-        <option value="2">2</option>
-      </select>
-    </td>
-  </tr>
-  <tr>
-    <td class="fw-semibold">SHORTNESS OF BREATH</td>
-    <td>
-      <select name="SHORTNESS OF BREATH" class="form-control rounded-pill" required>
-        <option value="" selected disabled>Select</option>
-        <option value="1">1</option>
-        <option value="2">2</option>
-      </select>
-    </td>
-  </tr>
-  <tr>
-    <td class="fw-semibold">SWALLOWING DIFFICULTY</td>
-    <td>
-      <select name="SWALLOWING DIFFICULTY" class="form-control rounded-pill" required>
-        <option value="" selected disabled>Select</option>
-        <option value="1">1</option>
-        <option value="2">2</option>
-      </select>
-    </td>
-  </tr>
-  <tr>
-    <td class="fw-semibold">CHEST PAIN</td>
-    <td>
-      <select name="CHEST PAIN" class="form-control rounded-pill" required>
-        <option value="" selected disabled>Select</option>
-        <option value="1">1</option>
-        <option value="2">2</option>
-      </select>
-    </td>
-  </tr>
-</tbody>
-            </table>
+        <div class="param-section">
+          <div class="params-grid-2">
+            <div class="field-group">
+              <label class="form-label">Gender</label>
+              <select name="GENDER" class="form-select" required>
+                <option value="" disabled selected>Select gender</option>
+                <option value="1">Male</option>
+                <option value="0">Female</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label class="form-label">Age (years)</label>
+              <input type="number" name="AGE" class="form-control" placeholder="e.g. 55" min="1" max="120" required>
+            </div>
           </div>
-          <button type="submit" class="btn btn-success w-100 mt-2 rounded-pill"><b>🔍 Predict Risk</b></button>
-        </form>
+        </div>
       </div>
-    </div>
 
-    <!-- Parameters Info Section -->
-    <div class="col-lg-6 d-flex">
-      <div class="card p-4 shadow-lg border-0 rounded-4 w-100 h-100">
-        <h4 class="text-center text-success mb-3"><b>About the Parameters</b></h4>
+      <!-- Lifestyle Factors -->
+      <div class="form-card" style="margin-bottom: 1.5rem;">
+        <div class="form-card-title"><span>🚬</span> Lifestyle Factors</div>
 
-        <div class="table-responsive">
-          <table class="table table-bordered align-middle">
-            <thead class="table-light text-center">
-              <tr>
-                <th><b>Parameter</b></th>
-                <th><b>Description</b></th>
-                <th><b>Values</b></th>
-              </tr>
-            </thead>
-            <tbody>
-  <tr>
-    <td><b>GENDER</b></td>
-    <td>Patient’s gender</td>
-    <td>M / F</td>
-  </tr>
-  <tr>
-    <td><b>AGE</b></td>
-    <td>Patient’s age in years</td>
-    <td>1 – 120</td>
-  </tr>
-  <tr>
-    <td><b>SMOKING</b></td>
-    <td>Does the patient smoke?</td>
-    <td>1 = Yes, 2 = No</td>
-  </tr>
-  <tr>
-    <td><b>YELLOW_FINGERS</b></td>
-    <td>Yellow fingers due to smoking</td>
-    <td>1 = Yes, 2 = No</td>
-  </tr>
-  <tr>
-    <td><b>ANXIETY</b></td>
-    <td>Does the patient have anxiety?</td>
-    <td>1 = Yes, 2 = No</td>
-  </tr>
-  <tr>
-    <td><b>PEER_PRESSURE</b></td>
-    <td>Exposed to peer pressure</td>
-    <td>1 = Yes, 2 = No</td>
-  </tr>
-  <tr>
-    <td><b>CHRONIC DISEASE</b></td>
-    <td>History of chronic diseases</td>
-    <td>1 = Yes, 2 = No</td>
-  </tr>
-  <tr>
-    <td><b>FATIGUE</b></td>
-    <td>Frequent fatigue symptoms</td>
-    <td>1 = Yes, 2 = No</td>
-  </tr>
-  <tr>
-    <td><b>ALLERGY</b></td>
-    <td>Any allergy present</td>
-    <td>1 = Yes, 2 = No</td>
-  </tr>
-  <tr>
-    <td><b>WHEEZING</b></td>
-    <td>Does the patient wheeze?</td>
-    <td>1 = Yes, 2 = No</td>
-  </tr>
-  <tr>
-    <td><b>ALCOHOL CONSUMING</b></td>
-    <td>Consumes alcohol</td>
-    <td>1 = Yes, 2 = No</td>
-  </tr>
-  <tr>
-    <td><b>COUGHING</b></td>
-    <td>Frequent coughing</td>
-    <td>1 = Yes, 2 = No</td>
-  </tr>
-  <tr>
-    <td><b>SHORTNESS OF BREATH</b></td>
-    <td>Breathing difficulty</td>
-    <td>1 = Yes, 2 = No</td>
-  </tr>
-  <tr>
-    <td><b>SWALLOWING DIFFICULTY</b></td>
-    <td>Difficulty swallowing food/liquid</td>
-    <td>1 = Yes, 2 = No</td>
-  </tr>
-  <tr>
-    <td><b>CHEST PAIN</b></td>
-    <td>Chest pain reported</td>
-    <td>1 = Yes, 2 = No</td>
-  </tr>
-</tbody>
-          </table>
+        <div class="param-section">
+          <div class="param-section-label">Smoking &amp; Substance Use</div>
+          <div class="params-grid-2">
+
+            <div class="field-group">
+              <label class="form-label">Smoking</label>
+              <div class="toggle-group">
+                <div class="toggle-option">
+                  <input type="radio" name="SMOKING" id="smoking-yes" value="1" required>
+                  <label for="smoking-yes">✓ Yes</label>
+                </div>
+                <div class="toggle-option no">
+                  <input type="radio" name="SMOKING" id="smoking-no" value="0">
+                  <label for="smoking-no">✗ No</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label class="form-label">Alcohol Consuming</label>
+              <div class="toggle-group">
+                <div class="toggle-option">
+                  <input type="radio" name="ALCOHOL CONSUMING" id="alc-yes" value="1" required>
+                  <label for="alc-yes">✓ Yes</label>
+                </div>
+                <div class="toggle-option no">
+                  <input type="radio" name="ALCOHOL CONSUMING" id="alc-no" value="0">
+                  <label for="alc-no">✗ No</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label class="form-label">Yellow Fingers</label>
+              <div class="toggle-group">
+                <div class="toggle-option">
+                  <input type="radio" name="YELLOW_FINGERS" id="yf-yes" value="1" required>
+                  <label for="yf-yes">✓ Yes</label>
+                </div>
+                <div class="toggle-option no">
+                  <input type="radio" name="YELLOW_FINGERS" id="yf-no" value="0">
+                  <label for="yf-no">✗ No</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label class="form-label">Peer Pressure</label>
+              <div class="toggle-group">
+                <div class="toggle-option">
+                  <input type="radio" name="PEER_PRESSURE" id="pp-yes" value="1" required>
+                  <label for="pp-yes">✓ Yes</label>
+                </div>
+                <div class="toggle-option no">
+                  <input type="radio" name="PEER_PRESSURE" id="pp-no" value="0">
+                  <label for="pp-no">✗ No</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Medical History -->
+      <div class="form-card" style="margin-bottom: 1.5rem;">
+        <div class="form-card-title"><span>🏥</span> Medical History &amp; Symptoms</div>
+
+        <div class="param-section">
+          <div class="param-section-label">Conditions &amp; Mental Health</div>
+          <div class="params-grid-2">
+
+            <div class="field-group">
+              <label class="form-label">Chronic Disease</label>
+              <div class="toggle-group">
+                <div class="toggle-option">
+                  <input type="radio" name="CHRONIC DISEASE" id="cd-yes" value="1" required>
+                  <label for="cd-yes">✓ Yes</label>
+                </div>
+                <div class="toggle-option no">
+                  <input type="radio" name="CHRONIC DISEASE" id="cd-no" value="0">
+                  <label for="cd-no">✗ No</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label class="form-label">Anxiety</label>
+              <div class="toggle-group">
+                <div class="toggle-option">
+                  <input type="radio" name="ANXIETY" id="anx-yes" value="1" required>
+                  <label for="anx-yes">✓ Yes</label>
+                </div>
+                <div class="toggle-option no">
+                  <input type="radio" name="ANXIETY" id="anx-no" value="0">
+                  <label for="anx-no">✗ No</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label class="form-label">Allergy</label>
+              <div class="toggle-group">
+                <div class="toggle-option">
+                  <input type="radio" name="ALLERGY" id="all-yes" value="1" required>
+                  <label for="all-yes">✓ Yes</label>
+                </div>
+                <div class="toggle-option no">
+                  <input type="radio" name="ALLERGY" id="all-no" value="0">
+                  <label for="all-no">✗ No</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label class="form-label">Fatigue</label>
+              <div class="toggle-group">
+                <div class="toggle-option">
+                  <input type="radio" name="FATIGUE" id="fat-yes" value="1" required>
+                  <label for="fat-yes">✓ Yes</label>
+                </div>
+                <div class="toggle-option no">
+                  <input type="radio" name="FATIGUE" id="fat-no" value="0">
+                  <label for="fat-no">✗ No</label>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="param-section">
+          <div class="param-section-label">Respiratory &amp; Other Symptoms</div>
+          <div class="params-grid-2">
+
+            <div class="field-group">
+              <label class="form-label">Wheezing</label>
+              <div class="toggle-group">
+                <div class="toggle-option">
+                  <input type="radio" name="WHEEZING" id="wh-yes" value="1" required>
+                  <label for="wh-yes">✓ Yes</label>
+                </div>
+                <div class="toggle-option no">
+                  <input type="radio" name="WHEEZING" id="wh-no" value="0">
+                  <label for="wh-no">✗ No</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label class="form-label">Coughing</label>
+              <div class="toggle-group">
+                <div class="toggle-option">
+                  <input type="radio" name="COUGHING" id="co-yes" value="1" required>
+                  <label for="co-yes">✓ Yes</label>
+                </div>
+                <div class="toggle-option no">
+                  <input type="radio" name="COUGHING" id="co-no" value="0">
+                  <label for="co-no">✗ No</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label class="form-label">Shortness of Breath</label>
+              <div class="toggle-group">
+                <div class="toggle-option">
+                  <input type="radio" name="SHORTNESS OF BREATH" id="sb-yes" value="1" required>
+                  <label for="sb-yes">✓ Yes</label>
+                </div>
+                <div class="toggle-option no">
+                  <input type="radio" name="SHORTNESS OF BREATH" id="sb-no" value="0">
+                  <label for="sb-no">✗ No</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label class="form-label">Swallowing Difficulty</label>
+              <div class="toggle-group">
+                <div class="toggle-option">
+                  <input type="radio" name="SWALLOWING DIFFICULTY" id="sw-yes" value="1" required>
+                  <label for="sw-yes">✓ Yes</label>
+                </div>
+                <div class="toggle-option no">
+                  <input type="radio" name="SWALLOWING DIFFICULTY" id="sw-no" value="0">
+                  <label for="sw-no">✗ No</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label class="form-label">Chest Pain</label>
+              <div class="toggle-group">
+                <div class="toggle-option">
+                  <input type="radio" name="CHEST PAIN" id="cp-yes" value="1" required>
+                  <label for="cp-yes">✓ Yes</label>
+                </div>
+                <div class="toggle-option no">
+                  <input type="radio" name="CHEST PAIN" id="cp-no" value="0">
+                  <label for="cp-no">✗ No</label>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <button type="submit" class="submit-btn">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          Run Lung Cancer Risk Analysis
+        </button>
+      </div>
+
+    </form>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar-card fade-up delay-2">
+      <div class="sidebar-title">📋 Parameter Reference</div>
+
+      <div class="param-info-list">
+        <div class="param-info-item">
+          <span class="param-name">GENDER</span>
+          <div><span class="param-desc">Patient's biological sex</span><br><span class="param-val">M / F</span></div>
+        </div>
+        <div class="param-info-item">
+          <span class="param-name">AGE</span>
+          <div><span class="param-desc">Age in years</span><br><span class="param-val">1–120</span></div>
+        </div>
+        <div class="param-info-item">
+          <span class="param-name">SMOKING</span>
+          <div><span class="param-desc">Current or past smoking habit</span><br><span class="param-val">1=Yes · 0=No</span></div>
+        </div>
+        <div class="param-info-item">
+          <span class="param-name">YELLOW_FINGERS</span>
+          <div><span class="param-desc">Nicotine-stained fingers</span><br><span class="param-val">1=Yes · 0=No</span></div>
+        </div>
+        <div class="param-info-item">
+          <span class="param-name">ANXIETY</span>
+          <div><span class="param-desc">Diagnosed anxiety disorder</span><br><span class="param-val">1=Yes · 0=No</span></div>
+        </div>
+        <div class="param-info-item">
+          <span class="param-name">PEER_PRESSURE</span>
+          <div><span class="param-desc">Social pressure to smoke</span><br><span class="param-val">1=Yes · 0=No</span></div>
+        </div>
+        <div class="param-info-item">
+          <span class="param-name">CHRONIC DISEASE</span>
+          <div><span class="param-desc">Any long-term illness</span><br><span class="param-val">1=Yes · 0=No</span></div>
+        </div>
+        <div class="param-info-item">
+          <span class="param-name">FATIGUE</span>
+          <div><span class="param-desc">Persistent tiredness</span><br><span class="param-val">1=Yes · 0=No</span></div>
+        </div>
+        <div class="param-info-item">
+          <span class="param-name">ALLERGY</span>
+          <div><span class="param-desc">Known allergic conditions</span><br><span class="param-val">1=Yes · 0=No</span></div>
+        </div>
+        <div class="param-info-item">
+          <span class="param-name">WHEEZING</span>
+          <div><span class="param-desc">Audible breathing difficulties</span><br><span class="param-val">1=Yes · 0=No</span></div>
+        </div>
+        <div class="param-info-item">
+          <span class="param-name">ALCOHOL CONSUMING</span>
+          <div><span class="param-desc">Regular alcohol intake</span><br><span class="param-val">1=Yes · 0=No</span></div>
+        </div>
+        <div class="param-info-item">
+          <span class="param-name">COUGHING</span>
+          <div><span class="param-desc">Persistent cough present</span><br><span class="param-val">1=Yes · 0=No</span></div>
+        </div>
+        <div class="param-info-item">
+          <span class="param-name">SHORTNESS OF BREATH</span>
+          <div><span class="param-desc">Dyspnea or breathlessness</span><br><span class="param-val">1=Yes · 0=No</span></div>
+        </div>
+        <div class="param-info-item">
+          <span class="param-name">SWALLOWING DIFFICULTY</span>
+          <div><span class="param-desc">Dysphagia symptoms</span><br><span class="param-val">1=Yes · 0=No</span></div>
+        </div>
+        <div class="param-info-item">
+          <span class="param-name">CHEST PAIN</span>
+          <div><span class="param-desc">Reported thoracic pain</span><br><span class="param-val">1=Yes · 0=No</span></div>
         </div>
       </div>
     </div>
 
   </div>
 </div>
-{% endblock %}
+
+{% endblock %} 

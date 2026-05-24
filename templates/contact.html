@@ -1,13 +1,196 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+{% block title %}Contact — PulmoScan AI{% endblock %}
 {% block content %}
-<div class="container mt-5">
-  <div class="card shadow-lg p-4 text-center border-success rounded-3">
-    <h2 class="text-success mb-3"><b>📬Get in Touch</b></h2>
-    <p class="lead mb-2"><b>We’d love to hear from you! Reach out via:</b></p>
-    <p class="mb-1"><strong>Email:</strong> <a href="mailto:support@lungpredict.com" class="text-decoration-none text-success">support@lungpredict.com</a> ✉️</p>
-    <p class="mb-0"><strong>Phone:</strong> <a href="tel:+919876543210" class="text-decoration-none text-success">+91-9876543210</a> 📞</p>
-    <hr class="my-4">
-    <p class="text-muted">Our team is available Monday to Friday, 9 AM - 6 PM.</p>
+
+<style>
+  .contact-page {
+    padding: 3rem 2.5rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .contact-header { text-align: center; margin-bottom: 3rem; }
+
+  .contact-title {
+    font-family: var(--font-display);
+    font-size: 2.4rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    margin: 1rem 0 0.75rem;
+  }
+
+  .contact-title span { color: var(--teal); }
+  .contact-sub { color: var(--text-secondary); font-size: 1rem; }
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .contact-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.25s;
+    backdrop-filter: blur(12px);
+    text-decoration: none;
+    display: block;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .contact-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--teal), transparent);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .contact-card:hover {
+    border-color: var(--teal-border);
+    background: var(--teal-glow);
+    transform: translateY(-4px);
+  }
+
+  .contact-card:hover::before { opacity: 1; }
+
+  .contact-card-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .contact-card-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+
+  .contact-card-value {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--teal);
+    letter-spacing: -0.02em;
+  }
+
+  .contact-card-desc {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    margin-top: 8px;
+  }
+
+  /* Hours card */
+  .hours-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    padding: 2rem;
+    backdrop-filter: blur(12px);
+  }
+
+  .hours-title {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--card-border);
+  }
+
+  .hours-grid {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px 24px;
+  }
+
+  .hours-day { font-size: 0.88rem; color: var(--text-secondary); }
+
+  .hours-time {
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    text-align: right;
+  }
+
+  .hours-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    color: var(--teal);
+    background: var(--teal-glow);
+    border: 1px solid var(--teal-border);
+    padding: 4px 12px;
+    border-radius: 100px;
+    margin-top: 1.5rem;
+  }
+
+  .hours-status::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: var(--teal);
+    border-radius: 50%;
+    animation: pulse-dot 2s infinite;
+  }
+
+  @keyframes pulse-dot {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.7); }
+  }
+</style>
+
+<div class="contact-page">
+
+  <div class="contact-header fade-up">
+    <span class="badge-teal">Get in Touch</span>
+    <h1 class="contact-title">We'd love to <span>hear from you</span></h1>
+    <p class="contact-sub">Questions about the model, integrations, or clinical deployment? Reach out.</p>
   </div>
+
+  <div class="contact-grid">
+    <a href="mailto:support@lungpredict.com" class="contact-card fade-up delay-1">
+      <span class="contact-card-icon">✉️</span>
+      <div class="contact-card-label">Email Support</div>
+      <div class="contact-card-value">support@pulmoscan.ai</div>
+      <div class="contact-card-desc">We respond within 24 hours on business days</div>
+    </a>
+
+    <a href="tel:+919876543210" class="contact-card fade-up delay-2">
+      <span class="contact-card-icon">📞</span>
+      <div class="contact-card-label">Phone</div>
+      <div class="contact-card-value">+91-9876543210</div>
+      <div class="contact-card-desc">Available during business hours only</div>
+    </a>
+  </div>
+
+  <div class="hours-card fade-up delay-3">
+    <div class="hours-title">🕐 Support Hours</div>
+    <div class="hours-grid">
+      <span class="hours-day">Monday – Friday</span>
+      <span class="hours-time">9:00 AM – 6:00 PM IST</span>
+      <span class="hours-day">Saturday</span>
+      <span class="hours-time">10:00 AM – 2:00 PM IST</span>
+      <span class="hours-day">Sunday</span>
+      <span class="hours-time">Closed</span>
+    </div>
+    <div class="hours-status">Support team currently online</div>
+  </div>
+
 </div>
+
 {% endblock %}

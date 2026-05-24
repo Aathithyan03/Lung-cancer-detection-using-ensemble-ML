@@ -1,41 +1,201 @@
 {% extends "base.html" %}
+{% block title %}Model Insights — PulmoScan AI{% endblock %}
 {% block content %}
-<div class="p-5">
-  <h3 class="text-success"><b>📊 Data & Model Insights</b></h3>
-  <b><p>Below are some key visualizations generated from the dataset and model performance.</b></p>
 
-  <div class="row">
-    <!-- Age Distribution -->
-    <div class="col-md-6">
-      <div class="card p-3 shadow mb-4">
-        <h5 class="text-center text-success"><b>Age Distribution</b></h5>
-        <img src="{{ url_for('static', filename='age_distribution.png') }}" class="img-fluid rounded" alt="Age Distribution">
-      </div>
+<style>
+  .insights-page { padding: 3rem 2.5rem; max-width: 1300px; margin: 0 auto; }
+
+  .page-header { margin-bottom: 3rem; }
+
+  .page-header-title {
+    font-family: var(--font-display);
+    font-size: 2.4rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    margin: 1rem 0 0.75rem;
+  }
+
+  .page-header-title span { color: var(--teal); }
+
+  .page-header p { color: var(--text-secondary); font-size: 0.95rem; }
+
+  .charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .chart-panel {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s;
+    backdrop-filter: blur(12px);
+  }
+
+  .chart-panel:hover {
+    border-color: var(--teal-border);
+    transform: translateY(-3px);
+  }
+
+  .chart-panel-header {
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--card-border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .chart-panel-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    background: var(--teal-glow);
+    border: 1px solid var(--teal-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+  }
+
+  .chart-panel-title {
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .chart-panel-body { padding: 20px; }
+
+  .chart-panel img {
+    width: 100%;
+    border-radius: var(--radius-sm);
+    display: block;
+  }
+
+  .chart-placeholder {
+    height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.02);
+    border: 1px dashed var(--card-border);
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    font-size: 0.85rem;
+  }
+
+  /* Model performance strip */
+  .perf-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 3rem;
+  }
+
+  .perf-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-sm);
+    padding: 20px;
+    text-align: center;
+    transition: all 0.2s;
+  }
+
+  .perf-card:hover { border-color: var(--teal-border); background: var(--teal-glow); }
+
+  .perf-val {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--teal);
+    letter-spacing: -0.04em;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .perf-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+</style>
+
+<div class="insights-page">
+
+  <div class="page-header fade-up">
+    <span class="badge-teal">Model Insights</span>
+    <h1 class="page-header-title">Data &amp; <span>Analytics</span></h1>
+    <p>Explore the dataset visualizations, model performance, and feature correlations behind PulmoScan AI.</p>
+  </div>
+
+  <!-- MODEL PERFORMANCE -->
+  <div class="perf-strip fade-up delay-1">
+    <div class="perf-card">
+      <div class="perf-val">88.71%</div>
+      <div class="perf-label">Accuracy</div>
     </div>
-
-    <!-- Feature Importance -->
-    <div class="col-md-6">
-      <div class="card p-3 shadow mb-4">
-        <h5 class="text-center text-success"><b>Feature Importance</b></h5>
-        <img src="{{ url_for('static', filename='feature_importance.png') }}" class="img-fluid rounded" alt="Feature Importance">
-      </div>
+    <div class="perf-card">
+      <div class="perf-val">0.884</div>
+      <div class="perf-label">AUC-ROC Score</div>
     </div>
-
-    <!-- Correlation Heatmap -->
-    <div class="col-md-6">
-      <div class="card p-3 shadow mb-4">
-        <h5 class="text-center text-success"><b>Correlation Heatmap</b></h5>
-        <img src="{{ url_for('static', filename='correlation_heatmap.png') }}" class="img-fluid rounded" alt="Correlation Heatmap">
-      </div>
+    <div class="perf-card">
+      <div class="perf-val">93%</div>
+      <div class="perf-label">Precision</div>
     </div>
-
-    <!-- ROC Curve -->
-    <div class="col-md-6">
-      <div class="card p-3 shadow mb-4">
-        <h5 class="text-center text-success"><b>ROC Curve</b></h5>
-        <img src="{{ url_for('static', filename='roc_curve.png') }}" class="img-fluid rounded" alt="ROC Curve">
-      </div>
+    <div class="perf-card">
+      <div class="perf-val">94%</div>
+      <div class="perf-label">Recall</div>
     </div>
   </div>
+
+  <!-- CHARTS -->
+  <div class="charts-grid">
+
+    <div class="chart-panel fade-up delay-1">
+      <div class="chart-panel-header">
+        <div class="chart-panel-icon">📊</div>
+        <div class="chart-panel-title">Age Distribution</div>
+      </div>
+      <div class="chart-panel-body">
+        <img src="{{ url_for('static', filename='age_distribution.png') }}" alt="Age Distribution">
+      </div>
+    </div>
+
+    <div class="chart-panel fade-up delay-2">
+      <div class="chart-panel-header">
+        <div class="chart-panel-icon">🎯</div>
+        <div class="chart-panel-title">Feature Importance</div>
+      </div>
+      <div class="chart-panel-body">
+        <img src="{{ url_for('static', filename='feature_importance.png') }}" alt="Feature Importance">
+      </div>
+    </div>
+
+    <div class="chart-panel fade-up delay-3">
+      <div class="chart-panel-header">
+        <div class="chart-panel-icon">🔥</div>
+        <div class="chart-panel-title">Correlation Heatmap</div>
+      </div>
+      <div class="chart-panel-body">
+        <img src="{{ url_for('static', filename='correlation_heatmap.png') }}" alt="Correlation Heatmap">
+      </div>
+    </div>
+
+    <div class="chart-panel fade-up delay-4">
+      <div class="chart-panel-header">
+        <div class="chart-panel-icon">📈</div>
+        <div class="chart-panel-title">ROC Curve</div>
+      </div>
+      <div class="chart-panel-body">
+        <img src="{{ url_for('static', filename='roc_curve.png') }}" alt="ROC Curve">
+      </div>
+    </div>
+
+  </div>
+
 </div>
 {% endblock %}

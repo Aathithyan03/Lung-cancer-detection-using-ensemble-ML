@@ -3,94 +3,191 @@ import pandas as pd
 from joblib import load
 from pathlib import Path
 import numpy as np
+import matplotlib.pyplot as plt
+import os
 
+# PDF
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
+
+# -------------------------------
 # Flask app
-app = Flask(__name__)
+# -------------------------------
+app = Flask(__name__, template_folder="templates", static_folder="static")
 
 # -------------------------------
 # Paths
 # -------------------------------
 BASE_DIR = Path(__file__).resolve().parent
-MODEL_PATH = BASE_DIR / "models" / "ensemble_model.joblib"
+MODEL_PATH = BASE_DIR / "models" / "rf_model.joblib"
 META_PATH = BASE_DIR / "models" / "model_meta.joblib"
 
 # -------------------------------
-# Load model + metadata
+# Load model
 # -------------------------------
 model = load(MODEL_PATH)
 meta = load(META_PATH)
-FEATURES = meta["features"]
 
-# Extract Random Forest feature importances from metadata
+FEATURES = meta["features"]
 RF_FEATURE_IMPORTANCES = meta.get("rf_feature_importances", None)
+
 if RF_FEATURE_IMPORTANCES is not None:
-    RF_FEATURE_IMPORTANCES = RF_FEATURE_IMPORTANCES.tolist()  # Convert to list
+    RF_FEATURE_IMPORTANCES = list(RF_FEATURE_IMPORTANCES)
+
+# -------------------------------
+# Feature Importance Graph
+# -------------------------------
+def generate_feature_importance_chart(importances, feature_names):
+    plt.figure()
+
+    sorted_idx = np.argsort(importances)[::-1]
+    sorted_importances = np.array(importances)[sorted_idx]
+    sorted_features = np.array(feature_names)[sorted_idx]
+
+    plt.barh(sorted_features, sorted_importances)
+    plt.xlabel("Importance Score")
+    plt.ylabel("Features")
+    plt.title("Feature Importance")
+    plt.gca().invert_yaxis()
+
+    chart_path = os.path.join("static", "feature_importance.png")
+    plt.savefig(chart_path, bbox_inches='tight')
+    plt.close()
+
+    return chart_path
+
+# -------------------------------
+# PDF Generator
+# -------------------------------
+def generate_pdf(prediction, probability, risk, advice, features, values):
+    file_path = os.path.join("static", "report.pdf")
+
+    doc = SimpleDocTemplate(file_path)
+    styles = getSampleStyleSheet()
+
+    content = []
+
+    content.append(Paragraph("Medical Prediction Report", styles["Title"]))
+    content.append(Spacer(1, 20))
+
+    content.append(Paragraph(f"Prediction: {prediction}", styles["Normal"]))
+    content.append(Paragraph(f"Probability: {probability}", styles["Normal"]))
+    content.append(Paragraph(f"Risk Level: {risk}", styles["Normal"]))
+    content.append(Paragraph(f"Advice: {advice}", styles["Normal"]))
+
+    content.append(Spacer(1, 20))
+    content.append(Paragraph("Patient Details:", styles["Heading2"]))
+
+    for f, v in zip(features, values):
+        content.append(Paragraph(f"{f}:    {v}", styles["Normal"]))
+
+    doc.build(content)
+
+    return file_path
 
 # -------------------------------
 # Routes
 # -------------------------------
-
 @app.route("/")
 def index():
-    """Homepage"""
     return render_template("index.html")
 
 
 @app.route("/patient-form")
 def patient_form():
-    """Form for entering patient details"""
     return render_template("patient_form.html", features=FEATURES)
 
 
 @app.route("/predict", methods=["POST"])
 def predict():
-    """Handle prediction and show results"""
 
-    # Collect input data from form
-    input_data = []
-    for f in FEATURES:
-        val = request.form.get(f)
+    input_values = []
+    
+
+    for feature in FEATURES:
+        value = request.form.get(feature)
         try:
-            input_data.append(float(val))
+            value = float(value)
         except:
-            input_data.append(0)
+            value = 0
+        input_values.append(value)
 
-    # Convert to DataFrame
-    input_df = pd.DataFrame([dict(zip(FEATURES, input_data))])
+    input_df = pd.DataFrame([dict(zip(FEATURES, input_values))])
+    print(input_df)
+
+    # Prediction
+    probability = model.predict_proba(input_df)[0][1]
+    print(probability)
+    probability_percent = f"{probability*100:.2f}%"
+    if(probability>=0.7):
+        prediction="Cancer Detected"
+    elif(probability>=0.5 and probability<=0.7):
+        prediction="Almost confirmed as Cancer"
+    else:
+        probability="No Cancer"
+    # -------------------------------
+    # Risk Level
+    # -------------------------------
+    if probability < 0.3:
+        risk = "Low Risk"
+    elif probability < 0.7:
+        risk = "Medium Risk"
+    else:
+        risk = "High Risk"
 
     # -------------------------------
-    # Make prediction
+    # Advice
     # -------------------------------
-    proba = model.predict_proba(input_df)[0, 1]
-    pred = int(proba >= 0.5)
-    prediction = "Yes" if pred == 1 else "No"  # Yes = Cancer, No = No Cancer
-    probability = f"{proba:.2%}"  # Display as percentage
+    if prediction == "Cancer Detected":
+        advice = "Consult an oncologist immediately."
+    else:
+        advice = "Maintain a healthy lifestyle."
 
     # -------------------------------
-    # Render the prediction result page
+    # Graph
     # -------------------------------
+    chart_path = None
+    if RF_FEATURE_IMPORTANCES is not None:
+        chart_path = generate_feature_importance_chart(
+            RF_FEATURE_IMPORTANCES,
+            FEATURES
+        )
+
+    # -------------------------------
+    # PDF
+    # -------------------------------
+    pdf_path = generate_pdf(
+        prediction,
+        probability_percent,
+        risk,
+        advice,
+        FEATURES,
+        input_values
+    )
+
     return render_template(
         "prediction_result.html",
         prediction=prediction,
-        probability=probability,
-        feature_importances=RF_FEATURE_IMPORTANCES,
-        feature_names=FEATURES
+        probability=probability_percent,
+        risk=risk,
+        advice=advice,
+        chart_path=chart_path,
+        pdf_path=pdf_path
     )
+
 
 @app.route("/data-info")
 def data_info():
-    """Dataset info page"""
     return render_template("data_info.html")
 
 
 @app.route("/contact")
 def contact():
-    """Contact page"""
     return render_template("contact.html")
 
 
 # -------------------------------
-# Run the app
+# Run
 # -------------------------------
 if __name__ == "__main__":
     app.run(debug=True)
